@@ -9,6 +9,8 @@
 #include <SDL_ttf.h>
 #include <SDL_image.h>
 
+#include "GameWorld.h"
+
 #include "audio.h"
 #include "object.h"
 #include "entity.h"
@@ -16,7 +18,6 @@
 
 #define WIDTH 640
 #define HEIGHT 480
-#define GRAVITY 15
 
 using namespace std;
 
@@ -44,13 +45,13 @@ private:
 	int frameTime; // FPS
 
 	bool running;
-	int Level;
+	static int Level;
 
-	bool idle, run, jump, fall, spin;
-	bool isFalling;
-	bool l, r, u;
+	//bool idle, run, jump, fall, spin;
+	//bool isFalling;
+	//bool l, r, u;
 	bool isFullscreen;
-	int speed = 10;
+	//int speed = 10;
 	int jumpSpeed = 50;
 	int switchLevel = 0;
 
