@@ -1,5 +1,5 @@
 # Adventures of Robo
-![C++ - v14](https://img.shields.io/badge/C++_v14-00599C)
+![C++ - v14](https://img.shields.io/badge/C++_v14-2A2F3D)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/TxbiG/Adventures-of-robo?style=flat&color=green)
 ![License: MIT](https://img.shields.io/badge/License_MIT-181717)
 
