@@ -1,7 +1,7 @@
 # Adventures of Robo
 ![C++ - v14](https://img.shields.io/badge/C++_v14-00599C?logo=Cplusplus)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/TxbiG/Adventures-of-robo?style=flat&color=A5CD39)
-![License: MIT](https://img.shields.io/badge/License_MIT-A5CD39)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/TxbiG/Adventures-of-robo?style=flat&color=34A853)
+![License: MIT](https://img.shields.io/badge/License_MIT-34A853)
 
 A 2D game made in SDL2 as a part of a university assignment
 
