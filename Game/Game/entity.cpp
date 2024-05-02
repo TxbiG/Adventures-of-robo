@@ -42,18 +42,6 @@ void entity::updateEntity(tilemap* map)
 	update();
 }
 
-bool entity::onCollision(object* a, object b)
-{
-	if ((a->getDX() < (b.getDX() + b.getDW())) && ((a->getDX() + a->getDW()) > b.getDX()) && (a->getDY() < (b.getDY() + b.getDH())) && ((a->getDY() + a->getDH()) > b.getDY()))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 void entity::renderEntity(bool b, SDL_Renderer* ren)
 {
 	if (b)
@@ -67,11 +55,14 @@ void entity::renderEntity(bool b, SDL_Renderer* ren)
 	render(ren);
 }
 
-SDL_Rect entity::EntityBox(SDL_Renderer* ren, int x, int y, SDL_Rect rect)
+bool entity::onCollision(object* a, object b)
 {
-	SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
-	SDL_Rect CollDest = { dest.x + x, dest.y + y, 5, 5 };
-	SDL_RenderFillRect(ren, &CollDest);
-
-	return rect = CollDest;
+	if ((a->getDX() < (b.getDX() + b.getDW())) && ((a->getDX() + a->getDW()) > b.getDX()) && (a->getDY() < (b.getDY() + b.getDH())) && ((a->getDY() + a->getDH()) > b.getDY()))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

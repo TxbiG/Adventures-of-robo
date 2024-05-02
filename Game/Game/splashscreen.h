@@ -13,11 +13,9 @@ using namespace std;
 class splashscreen
 {
 public:
-	splashscreen(SDL_Renderer* ren);
+	splashscreen(SDL_Renderer* ren);		// Splash screen constructor
 
 private:
-	TTF_Font* title;	// SDL font 
-	TTF_Font* subtitle;	// SDL font 
-	TTF_Font* text;	// SDL font 
+	TTF_Font* title;		// SDL font 
 };
 #endif // SPLASHSCREEN_H

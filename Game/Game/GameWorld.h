@@ -47,41 +47,40 @@ public:
 private:
 	bool collision(object* a, object* b);
 
-	const int GRAVITY = 3;
+	const int GRAVITY = 3;			// Worlds gravity
+	int score = 0;					// Player point score
 
-	// Number of levels
-	int Levelnum = 0;
-	bool isOnFlag = true;
-
-	int score = 0;								// Player point score
+	int Levelnum = 0;				// Used for checking what level player is on
+	bool isCol = true;				// Used to check if player is colliding with Enemies or buffs or Door
 
 	// Door anim
-	bool doorClosed = false;
-	bool doorOpening = false;
+	int doorClosed = 0;				// Used for door staying closed
+	int doorOpening = 0;			// Used for door opening
+
 
 	// Player anim
-	bool idle = false;
-	bool run = false;
-	bool jump = false;
-	bool fall = false;
-	bool grab = false;
-	bool death = false;
+	int idle = 0;					// Player idle
+	int run = 0;					// Player run
+	int jump = 0;					// Player jumping
+	int fall = 0;					// Player falling
+	int death = 0;					// Player  death
 
 	// Player mechanics
-	int speed = 5;
-	int jumpSpeed = 5;
-	int CyoteJump = 5;
-	bool canJump = false;
-	bool canCyoteJump = false;
-	bool isFalling;
+	int speed = 5;					// Players walk speed
+	int jumpSpeed = 12;				// Players jump speed
+	int CyoteJump = 10;				// CyoteJump timer before not being able to use it
+	bool canJump = false;			// Check if player can jump
+	bool canCyoteJump = false;		// Check if player can Cyote jump
+	bool isFalling;					// Check if player is falling
 
-	bool isWall = false;
-	//bool isGrabbing;
-	bool disableInput = false;
-
-	bool dash = false;
 
 	// Enemy movement
-	bool flipDir = false;
+	bool flipDir = false;		// Used for flipping enemy sprite
+
+	// Buff mechanic
+	bool BuffUsed = false;		// Check if Player buff has been used
+	int BuffLifeTime = 80;		// Life time of player buff before respawn
+	int Buffidle = 0;			// Player buff idle animation
+	int disapperBuff = 0;		// Player buff fading out animation
 };
 #endif // GAMEWORLD_H

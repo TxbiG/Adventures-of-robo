@@ -13,17 +13,16 @@ using namespace std;
 class audio
 {
 public:
-	audio(const char* filename);
+	void loadSound(const char* filename);			// load sound from file path
+	void loadMusic(const char* filename);			// load music from file path
 
-	void loadSound(const char* filename);
-	void loadMusic(const char* filename);
 
-	void playSound(const int value);
-	void playMusic(const int value);
+	void playSound();							// Play sound audio
+	void playMusic();			// Play music audio
 
 private:
-	std::vector<Mix_Chunk*> soundBank;
-	std::vector<Mix_Music*> musicBank;
+	Mix_Chunk* soundBank;						// Sound bank
+	Mix_Chunk* musicBank;			// Music bank
 
 };
 #endif //AUDIO_H

@@ -33,8 +33,9 @@ private:
 	int timer = 60;										// Used for the 60 "seconds" count down
 	bool bonusTime = true;
 
-	bool isFullscreen = true;							// Used to switch from minimised or to fullscreen
+	bool isFullscreen = false;							// Used to switch from minimised or to fullscreen
 	bool running = true;								// Used to running the game
+	bool hasQuit = false;
 
 	Timer m_Timer;										// Timer used for FPS
 	SDL_Window* m_window;								// SDL window setup

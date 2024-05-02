@@ -3,10 +3,7 @@
 
 // Game Engine
 // To do -
-// 30 / 4 / 24
-// Add enemy mechanics
 // Add Player controls - 
-	// Cyote jump
 	// Player Buff - 50%
 
 // CLEAN UP - 1/4/24
@@ -16,6 +13,8 @@
 
 // Enough time 
 // particles
+
+audio* sfx = new audio();
 SDL_Event m_event;					// SDL input
 Transition* transition;				// Transition screen
 
@@ -56,10 +55,10 @@ game::game()
 	running = true;											// Used for running the game
 	isFullscreen = false;									// Used to for minimising/maximising the window
 
-	//audio* sfx = new audio("assets/sounds/Splash.wav");		// Get Splash SFX
-	//sfx->playSound(0);										// Play sound
-	//splashscreen plash(renderer);								// Display Splash screen
-	//SDL_Delay(5000);											// 5s of displaying Slashscreen
+	sfx->loadSound("assets/sounds/Splash.wav");		// Get Splash SFX
+	sfx->playSound();										// Play sound
+	splashscreen plash(renderer);								// Display Splash screen
+	SDL_Delay(5000);											// 5s of displaying Slashscreen
 
 	gameWorld->init(renderer);								// Initilize the game world
 
@@ -118,9 +117,12 @@ void game::loop()
 		}
 	}
 
-	if (timer <= 0) { GameOver yl("You lose", renderer); }
-	if (timer > 0) { GameOver yw("You win", renderer); }
-	SDL_Delay(4000);
+	if (!hasQuit)
+	{
+		if (timer <= 0) { GameOver yl("You lose", renderer); }
+		if (timer > 0) { GameOver yw("You win", renderer); }
+		SDL_Delay(4000);
+	}
 
 	return;
 }
@@ -145,6 +147,7 @@ void game::input()
 				break;
 
 			case SDLK_ESCAPE:						// Quit game
+				hasQuit = true;
 				running = false;
 				break;
 

@@ -7,27 +7,17 @@
 #include <SDL_image.h>
 #include "object.h"
 
-#define TILE_SIZE 32
-
-struct TileType
-{
-    int Floor = 0;
-    int Wall = 0;
-    int Ceiling = 0;
-};
-
 class tilemap : public object
 {
 public:
-    void loadmap(const char* filename, SDL_Renderer* ren);
-    void drawMap(SDL_Renderer* ren);
-    void drawTiles(object o, SDL_Renderer* ren);
+    void loadmap(const char* filename, SDL_Renderer* ren);      // Load map
 
-    int getDX() const { return dest.x; }
-    int getDY() const { return dest.y; }
-    vector<object> map;
+    void drawMap(SDL_Renderer* ren);                            // Render map
+    void drawTiles(object o, SDL_Renderer* ren);                // draw the position of the tiles on screen
+
+    vector<object> map;                     // Tilemaps data
 
 private:
-    SDL_Rect dest{};
+    const int TILE_SIZE = 32;       // Tile size is set to 32 pixels
 };
 #endif //TILEMAP_H

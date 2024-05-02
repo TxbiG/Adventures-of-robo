@@ -2,11 +2,11 @@
 #include "UI.h"
 
 // Audio
-audio* CoinSFX;
-audio* BuffSFX;
-audio* DoorSFX;
-audio* DamageSFX;
-audio* Music;
+audio* CoinSFX = new audio();
+audio* BuffSFX = new audio();
+audio* DoorSFX = new audio();
+audio* DamageSFX = new audio();
+audio* Music = new audio();
 
 // Graphics
 tilemap* map = new tilemap();
@@ -29,29 +29,31 @@ GameWorld::GameWorld()
 
 void GameWorld::init(SDL_Renderer* ren)
 {
+	Music->loadMusic("assets/sounds/backgroundmusic.wav");
 	load_scene(ren);
 
 	// Load Coin(s)
 	coin->setImage("assets/sprites/coin.png", ren);
 	coin->setCurrectAnimation(coin->createAnimation(1, 4, 10));
-	CoinSFX = new audio("assets/sounds/Coin.wav");
+	CoinSFX->loadSound("assets/sounds/Coin.wav");
 
 	// Load Door
 	door->setImage("assets/sprites/Door.png", ren);
 	doorClosed = door->createAnimation(1, 1, 0);
 	doorOpening = door->createAnimation(1, 3, 50);
 	door->setCurrectAnimation(doorClosed);
-	DoorSFX = new audio("assets/sounds/DoorOpen.wav");
+	DoorSFX->loadSound("assets/sounds/DoorOpen.wav");
 
 	// Death box
 	DeathBox->setImage("assets/sprites/DeathBox.png", ren);
 	DeathBox->setCurrectAnimation(DeathBox->createAnimation(1, 2, 10));
 
 	// Buff
-	BuffSFX = new audio("assets/sounds/Buff.wav");
+	BuffSFX->loadSound("assets/sounds/Buff.wav");
 	Buff->setImage("assets/sprites/Buff.png", ren);
-	Buff->setDest(Vector2D(0, 0), 32, 32);
-	Buff->setCurrectAnimation(Buff->createAnimation(1, 1, 0));
+	disapperBuff = Buff->createAnimation(1, 3, 20);
+	Buffidle = Buff->createAnimation(1, 1, 0);
+	Buff->setCurrectAnimation(Buffidle);
 
 	// Enemy
 	Enemy->setImage("assets/sprites/Spike.png", ren);
@@ -62,14 +64,14 @@ void GameWorld::init(SDL_Renderer* ren)
 	idle = player->createAnimation(1, 4, 10);
 	run = player->createAnimation(2, 4, 10);
 	jump = player->createAnimation(3, 1, 0);
-	fall = player->createAnimation(3, 2, 0);
-	death = player->createAnimation(4, 2, 10);
+	fall = player->createAnimation(4, 1, 0);
+	death = player->createAnimation(5, 2, 10);
 
-	DamageSFX = new audio("assets/sounds/Damage.wav");
+	DamageSFX->loadSound("assets/sounds/Damage.wav");
 }
 void GameWorld::input(SDL_Event _event)
 {
-	if (isOnFlag)
+	if (isCol)
 	{
 		if (_event.type == SDL_KEYDOWN && _event.key.repeat == NULL) {
 			switch (_event.key.keysym.sym)
@@ -120,7 +122,6 @@ void GameWorld::input(SDL_Event _event)
 void GameWorld::update()
 {
 	isFalling = true;
-	isWall = true;
 	canTransition = false;
 
 	if (!player->is_on_floor() && player->velocity.y <= 2) { player->velocity.y = player->velocity.y + 1; }
@@ -133,7 +134,7 @@ void GameWorld::update()
 		{
 			debug.get_Debug("Player: Collided with coin.");
 			score += 10;
-			CoinSFX->playSound(0);
+			CoinSFX->playSound();
 			coin->setVisible(false);
 		}
 	}
@@ -142,40 +143,45 @@ void GameWorld::update()
 	if (collision(player, Buff))
 	{
 		// Hide buff object
-		if (Buff->getVisible())
+		if (Buff->getVisible() && !BuffUsed)
 		{
+			Buff->setCurrectAnimation(disapperBuff);
+			BuffUsed = true;
+			canJump = true;
+			CyoteJump = 10;
 			debug.get_Debug("Player: Collided with buff.");
-			BuffSFX->playSound(0);
-			canJump = false;
-			Buff->setVisible(false);
+			BuffSFX->playSound();
 		}
 	}
+
+	// Checks if buff has been used if has takes few seconds for it to appear back
+	if (BuffUsed) { BuffLifeTime--; if (BuffLifeTime <=50) { Buff->setVisible(false); } if (BuffLifeTime <= 0) { Buff->setVisible(true); BuffUsed = false; BuffLifeTime = 80; Buff->setCurrectAnimation(Buffidle); } }
 
 	// Get Door Collision
 	if (collision(player, door))
 	{
-		if (isOnFlag)
+		if (isCol)
 		{
 			// Change level
 			debug.get_Debug("Player: Collided with door.");
 			canSwitch = true;
-			DoorSFX->playSound(0);
+			DoorSFX->playSound();
 			canTransition = true;
 			setTransition();
 		}
-		isOnFlag = false;
+		isCol = false;
 	}
 
 	// Get Enemy Collision
 	if (collision(player, Enemy))
 	{
-		if (isOnFlag)
+		if (isCol)
 		{
 			if (Enemy->getVisible())
 			{
 				debug.get_Debug("Player: Collided with enemy.");
-				DamageSFX->playSound(0);
-				isOnFlag = false;
+				DamageSFX->playSound();
+				isCol = false;
 				canTransition = true;
 				setTransition();
 			};
@@ -185,13 +191,13 @@ void GameWorld::update()
 	// Get Death box Collision
 	if (collision(player, DeathBox))
 	{
-		if (isOnFlag)
+		if (isCol)
 		{
 			if (DeathBox->getVisible())
 			{
 				debug.get_Debug("Player: Collided with the void.");
-				DamageSFX->playSound(0);
-				isOnFlag = false;
+				DamageSFX->playSound();
+				isCol = false;
 				player->setCurrectAnimation(death);
 				canTransition = true;
 				player->setCurrectAnimation(death);
@@ -200,10 +206,10 @@ void GameWorld::update()
 		}
 	}
 
-	if (!isOnFlag)
+	if (!isCol)
 	{
 		if (canSwitch) { if (door->getCurrentAnimation() != doorOpening) { door->setCurrectAnimation(doorOpening); } }
-		else { if (player->getCurrentAnimation() != death) { player->setCurrectAnimation(death); } }
+		else { player->setCurrectAnimation(death); }
 	}
 	else
 	{
@@ -214,54 +220,92 @@ void GameWorld::update()
 		{
 			if (player->is_on_floor())
 			{
-				player->velocity.y = (player->velocity.y - jumpSpeed) - 2;
+				player->velocity.y = player->velocity.y - jumpSpeed;
 				debug.get_Debug("Player: Jumping");
 			}
 			else 
 			{
-				if (CyoteJump <= 0)
+				if (CyoteJump >= 0)
 				{
-					player->velocity.y =  (-player->velocity.y - jumpSpeed) * 2;
+					player->velocity.y -=  player->velocity.y + jumpSpeed;
 					debug.get_Debug("Player: Cyote Jumping");
 				}
 			}
+			CyoteJump = -1;
 			canJump = false;
-			CyoteJump = 0;
 		}
-		//if (gKeys[SDLK_m]) { if (player->getCurrentAnimation() != dash) { player->setCurrectAnimation(dash); } player->velocity.y; }
+		// State machine
+		// Jump & Fall
+		if (player->velocity.y <= -1 && !player->is_on_floor()) 
+		{ 
+			if (player->getCurrentAnimation() != jump) { player->setCurrectAnimation(jump); } 
+		}
+		if (player->velocity.y >= 1 && !player->is_on_floor()) 
+		{ 
+			if (player->getCurrentAnimation() != fall) { player->setCurrectAnimation(fall); } 
+		}
+
+		// Idle
+		if (player->velocity.x == 0 && player->velocity.y == 0) 
+		{ 
+			if (player->getCurrentAnimation() != idle) { player->setCurrectAnimation(idle); } 
+		}
+
+		// Run
+		if (player->velocity.x <= -1 && player->is_on_floor()) 
+		{ 
+			if (player->getCurrentAnimation() != run) { player->setCurrectAnimation(run); player->flip = SDL_FLIP_HORIZONTAL; } 
+		}
+		if (player->velocity.x >= 1 && player->is_on_floor()) 
+		{ 
+			if (player->getCurrentAnimation() != run) { player->setCurrectAnimation(run); player->flip = SDL_FLIP_NONE; } 
+		}
+
+		// Flip sprite
+		if (player->velocity.x <= -1) { player->flip = SDL_FLIP_HORIZONTAL; }
+		if (player->velocity.x >= 1) { player->flip = SDL_FLIP_NONE; }
 	}
 
-	// State machine
-	// Jump & Fall
-	if (player->velocity.y <= -1 && !player->is_on_floor()) { if (player->getCurrentAnimation() != jump) { player->setCurrectAnimation(jump); } }
-	if (player->velocity.y >= 1 && !player->is_on_floor()) { if (player->getCurrentAnimation() != fall) { player->setCurrectAnimation(fall); } }
-
-	// Idle
-	if (player->velocity.x == 0 && player->velocity.y == 0) { if (player->getCurrentAnimation() != idle) { player->setCurrectAnimation(idle); } }
-
-	// Run
-	if (player->velocity.x <= -1 && player->is_on_floor()) { if (player->getCurrentAnimation() != run) { player->setCurrectAnimation(run); player->flip = SDL_FLIP_HORIZONTAL; } }
-	if (player->velocity.x >= 1 && player->is_on_floor()) { if (player->getCurrentAnimation() != run) { player->setCurrectAnimation(run); player->flip = SDL_FLIP_NONE; } }
-
-	if (player->velocity.x <= -1) { player->flip = SDL_FLIP_HORIZONTAL; }
-	if (player->velocity.x >= 1) { player->flip = SDL_FLIP_NONE; }
-
 	// Checks if player is colliding through Floor
-	if (player->is_on_floor()) { canJump = true; if (!gKeys[SDLK_SPACE]) { player->velocity.y = player->velocity.y - 1; if (player->velocity.y != 0) { player->velocity.y = player->velocity.y - player->velocity.y; } } if (CyoteJump != 5) { CyoteJump = 5; } }
+	if (player->is_on_floor()) 
+	{ 
+		canJump = true; 
+		if (!gKeys[SDLK_SPACE]) { player->velocity.y = player->velocity.y - 1; 
+		if (player->velocity.y != 0) { player->velocity.y = player->velocity.y - player->velocity.y; } } 
+		if (CyoteJump != 10) { CyoteJump = 10; } 
+	}
+	else { if (CyoteJump >= 0) { CyoteJump--; } }
 
-	else { if (CyoteJump >= 0) { CyoteJump = -1; } }
 	// Checks if player is colliding through Ceiling
-	if (player->is_on_ceiling()) { player->velocity.y = player->velocity.y - player->velocity.y;  if (player->velocity.y == 0) { player->velocity.y = player->velocity.y + 1; } }
+	if (player->is_on_ceiling()) 
+	{ 
+		player->velocity.y = player->velocity.y - player->velocity.y;  
+		if (player->velocity.y == 0) { player->velocity.y = player->velocity.y + 1; } 
+	}
 
 	// Checks if playr is colliding through Left wall
-	if (player->is_on_wallL()) { if (!gKeys[SDLK_d]) { player->velocity.x = player->velocity.x - 1; if (player->velocity.x != 0) { player->velocity.x = player->velocity.x - player->velocity.x; } } }
+	if (player->is_on_wallL()) 
+	{ 
+		if (!gKeys[SDLK_d]) 
+		{ 
+			player->velocity.x = player->velocity.x - 1; 
+			if (player->velocity.x != 0) { player->velocity.x = player->velocity.x - player->velocity.x; } 
+		} 
+	}
 
 	// Stops player from colliding through Right wall
-	if (player->is_on_wallR()) { if (!gKeys[SDLK_a]) { player->velocity.x = player->velocity.x + 1; if (player->velocity.x != 0) { player->velocity.x = player->velocity.x - player->velocity.x; } } }
+	if (player->is_on_wallR()) 
+	{ 
+		if (!gKeys[SDLK_a]) 
+		{ 
+			player->velocity.x = player->velocity.x + 1; 
+			if (player->velocity.x != 0) 
+			{ player->velocity.x = player->velocity.x - player->velocity.x; } 
+		} 
+	}
 
 	// Checks if players all collisions are colliding then resets world
 	if (player->is_on_ceiling() && player->is_on_wallR() && player->is_on_wallL() && player->is_on_floor()) { resetWorld(); }
-
 
 	// Enemy Mechanic
 	if (Enemy->getVisible())
@@ -280,7 +324,7 @@ void GameWorld::update()
 	player->updateEntity(map);
 
 	if (Levelnum == 2 || Levelnum == 3) { DeathBox->update(); }
-	if (Levelnum == 3 || Levelnum == 4 || Levelnum == 5) { Enemy->updateEntity(map); }
+	if (Levelnum == 2 || Levelnum == 3 || Levelnum == 4 || Levelnum == 5) { Enemy->updateEntity(map); }
 }
 
 void GameWorld::render(SDL_Renderer* ren)
@@ -288,16 +332,19 @@ void GameWorld::render(SDL_Renderer* ren)
 	// TileMap layer
 	map->drawMap(ren);
 
-	if (Levelnum == 2 || Levelnum == 3) { DeathBox->render(ren); DeathBox->setVisible(true); }
-	else { DeathBox->setVisible(false); }
+	// Render Deathbox based on level
+	if (Levelnum == 2 || Levelnum == 3) { DeathBox->render(ren); DeathBox->setVisible(true); } else { DeathBox->setVisible(false); }
+	
 	// Object layer
 	coin->render(ren);
 	door->render(ren);
 	Buff->render(ren);
 
-	// Enemy layer
-	if (Levelnum == 3 || Levelnum == 4 || Levelnum == 5) { Enemy->renderEntity(debug.get_Debugger(), ren); Enemy->setVisible(true); }
-	else{ Enemy->setVisible(false); }
+	// Render Player buff based on level
+	if (Levelnum == 1 || Levelnum == 3) { Buff->render(ren); }
+
+	// Render Enemy based on level
+	if (Levelnum == 2 || Levelnum == 3 || Levelnum == 4 || Levelnum == 5) { Enemy->renderEntity(debug.get_Debugger(), ren); Enemy->setVisible(true); } else{ Enemy->setVisible(false); }
 	
 	// Player layer
 	player->renderEntity(debug.get_Debugger(), ren);
@@ -319,18 +366,22 @@ void GameWorld::load_scene(SDL_Renderer* ren)
 	case 0:
 		map->loadmap("assets/levels/1.map", ren);
 		door->setDest(Vector2D(542, 128), 32, 32);
-		player->setDest(Vector2D(150, 286), 32, 32);
+		player->setDest(Vector2D(150, 384), 32, 32);
 		coin->setDest(Vector2D(64, 190), 32, 32);
 		Enemy->setDest(Vector2D(0, 0), 32, 32);
 		DeathBox->setDest(Vector2D(0, 0), 96, 32);
+		Buff->setDest(Vector2D(386, 168), 32, 32);
+		Buff->setVisible(true);
 		break;
 	case 1:
 		map->loadmap("assets/levels/2.map", ren);
-		door->setDest(Vector2D(64, 352), 32, 32);
+		door->setDest(Vector2D(128, 96), 32, 32);
 		player->setDest(Vector2D(542, 384), 32, 32);
 		coin->setDest(Vector2D(288, 128), 32, 32);
 		DeathBox->setDest(Vector2D(319, 425), 96, 32);
-		Enemy->setDest(Vector2D(0, 0), 32, 32);
+		Enemy->setDest(Vector2D(96, 384), 32, 32);
+		Buff->setDest(Vector2D(-32, -32), 32, 32);
+		Buff->setVisible(false);
 		break;
 	case 2:
 		map->loadmap("assets/levels/3.map", ren);
@@ -339,6 +390,8 @@ void GameWorld::load_scene(SDL_Renderer* ren)
 		coin->setDest(Vector2D(64, 128));
 		DeathBox->setDest(Vector2D(319, 425), 96, 32);
 		Enemy->setDest(Vector2D(96, 384), 32, 32);
+		Buff->setDest(Vector2D(384, 168), 32, 32);
+		Buff->setVisible(true);
 		break;
 	case 3:
 		map->loadmap("assets/levels/4.map", ren);
@@ -346,6 +399,8 @@ void GameWorld::load_scene(SDL_Renderer* ren)
 		player->setDest(Vector2D(150, 286), 32, 32);
 		coin->setDest(Vector2D(64, 128), 32, 32);
 		Enemy->setDest(Vector2D(384, 384), 32, 32);
+		Buff->setDest(Vector2D(-32, -32), 32, 32);
+		Buff->setVisible(false);
 		break;
 	case 4:
 		map->loadmap("assets/levels/5.map", ren);
@@ -353,12 +408,14 @@ void GameWorld::load_scene(SDL_Renderer* ren)
 		player->setDest(Vector2D(96, 346), 32, 32);
 		coin->setDest(Vector2D(416, 128), 32, 32);
 		Enemy->setDest(Vector2D(384, 384), 32, 32);
+		Buff->setDest(Vector2D(448, 300), 32, 32);
+		Buff->setVisible(true);
 		break;
 	case 5:
 		canDestroy = true;
 	}
 
-	isOnFlag = true;
+	isCol = true;
 
 	coin->setVisible(true);
 	Buff->setVisible(true);
@@ -366,6 +423,8 @@ void GameWorld::load_scene(SDL_Renderer* ren)
 	canSwitch = false;
 	player->setCurrectAnimation(idle);
 	door->setCurrectAnimation(doorClosed);
+
+	Music->playMusic();
 
 	if (Levelnum <= 5) { Levelnum += 1; }
 
@@ -377,5 +436,5 @@ void GameWorld::resetWorld()
 	debug.get_Debug("Resetting world");
 	Vector2D tmp = player->getCheckPoint();
 	player->setDest(Vector2D(tmp.x, tmp.y));
-	isOnFlag = true;
+	isCol = true;
 }

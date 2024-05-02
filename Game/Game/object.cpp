@@ -58,16 +58,12 @@ void object::setDest(Vector2D vec, int w, int h)
 	dest.y = vec.y;
 	dest.w = w;
 	dest.h = h;
-	this->x;
-	this->y;
 }
 
 void object::setDest(Vector2D vec)
 {
 	dest.x = vec.x;
 	dest.y = vec.y;
-	this->x;
-	this->y;
 }
 
 void object::setSource(int x, int y, int w, int h)
@@ -76,6 +72,4 @@ void object::setSource(int x, int y, int w, int h)
 	src.y = y;
 	src.w = w;
 	src.h = h;
-	this->x;
-	this->y;
 }
