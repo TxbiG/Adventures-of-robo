@@ -32,7 +32,7 @@ game::game()
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) { std::cout << "SDL_CreateWindow: " << SDL_GetError << endl; }		
 	
 	// Create Window
-	m_window = SDL_CreateWindow("Toby Gardiner, 26584700, CGP2015M, Adventures of Robo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);	// Create the SDL window
+	m_window = SDL_CreateWindow("Adventures of Robo", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_RESIZABLE);	// Create the SDL window
 	
 	// Check if SDL window works
 	if (m_window == nullptr) { std::cout << "SDL_CreateWindow: " << SDL_GetError << endl; return; }
