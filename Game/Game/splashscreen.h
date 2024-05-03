@@ -17,7 +17,5 @@ public:
 
 private:
 	TTF_Font* title;	// SDL font 
-	TTF_Font* subtitle;	// SDL font 
-	TTF_Font* text;	// SDL font 
 };
 #endif // SPLASHSCREEN_H
