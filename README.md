@@ -3,7 +3,18 @@
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/TxbiG/Adventures-of-robo?style=flat&color=578B34)
 ![License: MIT](https://img.shields.io/badge/License_MIT-578B34)
 
-A 2D game made in SDL2 as a part of a university assignment.
+A 2D game engine made in SDL2 as a part of a university assignment.
+
+## Features
+Tilemap collision.  
+Enemies reset the player's position.  
+The player buff allows a double jump.  
+Controls -  
+A - Left  
+D - Right  
+Spacebar - Jump
+  
+  
 
 ## Package Versions [nuget]
 ![SDL2 - v2.30.0](https://img.shields.io/badge/SDL2_v2.30.0-2C4F7C)
