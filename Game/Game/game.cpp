@@ -2,17 +2,6 @@
 #include "GameOver.h"
 
 // Game Engine
-// To do -
-// Add Player controls - 
-	// Player Buff - 50%
-
-// CLEAN UP - 1/4/24
-// Audio
-// Fix animations (min & max) and state machines
-// Comment every mechanic!
-
-// Enough time 
-// particles
 
 audio* sfx = new audio();
 SDL_Event m_event;					// SDL input
