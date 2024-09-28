@@ -15,10 +15,7 @@ D - Right
 Spacebar - Jump
   
 
-![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image1.png?raw=true)
-![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image2.png)
-![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image3.bmp?raw=true)
-![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image4.bmp?raw=true)
+<img width=200px src="img/Image2.png" /><img width=200px src="img/Image3.png" /><img width=200px src="img/Image4.png" /><img width=200px src="img/Image1.png" />
 
 ## Package Versions [nuget] .NET
 ![SDL2 - v2.30.0](https://img.shields.io/badge/SDL2_v2.30.0-2C4F7C)
