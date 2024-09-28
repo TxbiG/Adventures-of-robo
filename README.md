@@ -14,9 +14,13 @@ A - Left
 D - Right  
 Spacebar - Jump
   
-  
 
-## Package Versions [nuget]
+![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image1.png?raw=true)
+![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image2.png)
+![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image3.bmp?raw=true)
+![alt text](https://github.com/TxbiG/Adventures-of-robo/tree/main/img/Image4.bmp?raw=true)
+
+## Package Versions [nuget] .NET
 ![SDL2 - v2.30.0](https://img.shields.io/badge/SDL2_v2.30.0-2C4F7C)
 ![SDL2-image - v2.8.2](https://img.shields.io/badge/SDL2_image_v2.8.2-2C4F7C)
 ![SDL2-ttf - v2.22.0](https://img.shields.io/badge/SDL2_ttf_v2.22.0-2C4F7C)
